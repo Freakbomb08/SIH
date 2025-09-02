@@ -39,7 +39,7 @@ const TechStack = () => {
       icon: MessageSquare,
       color: "text-secondary-foreground",
       bgColor: "bg-secondary/20",
-      techs: ["React", "Streamlit", "Dash", "WebGL"]
+      techs: ["React", "Tailwind"]
     }
   ];
 
