@@ -7,6 +7,7 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
+    { name: "Dashboard", icon: MessageSquare, href: "/components/Dashboard/Dashboard.tsx" },
     { name: "Chat", icon: MessageSquare, href: "#chat" },
     { name: "Map", icon: Map, href: "#map" },
     { name: "Technology", icon: Cpu, href: "#tech" },
