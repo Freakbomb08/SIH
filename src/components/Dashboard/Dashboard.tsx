@@ -27,7 +27,7 @@ export const Dashboard = () => {
       case "overview":
       default:
         return (
-          <div className="space-y-8">
+          <div className="space-y-8" id="Dashboard">
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="p-6 bg-gradient-ocean text-primary-foreground">
@@ -64,7 +64,7 @@ export const Dashboard = () => {
             {/* Combined View */}
             <div className="grid grid-cols-1 xl:grid-cols-1 gap-8 mx-20 my-10">
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-foreground">Real-time Ocean Map</h2>
+                <h2 className="text-xl font-bold text-foreground">Real-time Argo Map</h2>
                 <div className="h-[700px]">
                   <Oceanmap />
                 </div>

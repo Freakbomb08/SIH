@@ -8,11 +8,11 @@ const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" }, // internal route
-    { name: "Chat", icon: MessageSquare, href: "#chat" },           // page anchor
-    { name: "Map", icon: Map, href: "#map" },                      // page anchor
-    { name: "Technology", icon: Cpu, href: "#tech" },              // page anchor
-    { name: "Data", icon: Database, href: "#data" },               // page anchor
+    { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },           // internal route
+    { name: "Chat", icon: MessageSquare, href: "./#chat" },                     // page anchor
+    { name: "Map", icon: Map, href: "./#map" },                                 // page anchor
+    { name: "Technology", icon: Cpu, href: "./#tech" },                         // page anchor
+    { name: "Data", icon: Database, href: "./#data" },                          // page anchor
   ];
 
   const renderNavLink = (item: { name: string; icon: any; href: string }) => {
@@ -64,7 +64,7 @@ const Navigation: React.FC = () => {
   return (
     <nav className="w-full">
       <div className="container mx-auto flex items-center justify-between py-4">
-        <div className="flex items-center gap-3">
+          <a href="./"><div className="flex items-center gap-3">
             <div className="p-2 rounded-full bg-gradient-ocean">
               <Waves className="w-6 h-6 text-primary-foreground" />
             </div>
@@ -72,7 +72,7 @@ const Navigation: React.FC = () => {
               <h1 className="text-xl font-bold text-foreground">FloatChat</h1>
               <span className="text-xs text-muted-foreground">Beta</span>
             </div>
-          </div>
+          </div></a>
 
         {/* Desktop menu */}
         <div className="hidden md:flex items-center gap-8">

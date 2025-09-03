@@ -2,7 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, BarChart3, Waves } from "lucide-react";
 
-// Mock oceanographic data
+//Ocean Profile
+// Mock temperature/salinity profile data
 const temperatureProfile = [
   { depth: 0, temp: 28.5, salinity: 35.2 },
   { depth: 50, temp: 26.8, salinity: 35.4 },
@@ -54,30 +55,35 @@ export const DataVisualization = () => {
           </div>
 
           {/* Temperature Profile Line */}
-          <div className="absolute left-12 right-16 top-0 h-full">
-            <svg className="w-full h-full">
-              <path
-                d={`M ${temperatureProfile.map((point, index) => 
-                  `${(point.temp / 30) * 100},${(index / (temperatureProfile.length - 1)) * 100}`
-                ).join(' L ')}`}
-                fill="none"
-                stroke="hsl(var(--accent))"
-                strokeWidth="3"
-                className="drop-shadow-sm"
+          <div className="absolute left-14 right-14 top-6 bottom-6">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="tempGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="hsl(var(--accent-glow))" />
+                <stop offset="100%" stopColor="hsl(var(--accent))" />
+              </linearGradient>
+            </defs>
+            <path
+              d={`M ${temperatureProfile.map((point, index) => 
+                `${(point.temp / 30) * 100} ${(index / (temperatureProfile.length - 1)) * 100}`
+              ).join(' L ')}`}
+              fill="none"
+              stroke="url(#tempGradient)"
+              strokeWidth="0.8"
+              vectorEffect="non-scaling-stroke"
+            />
+            {temperatureProfile.map((point, index) => (
+              <circle
+                key={index}
+                cx={(point.temp / 30) * 100}
+                cy={(index / (temperatureProfile.length - 1)) * 100}
+                r="1.2"
+                fill="hsl(var(--accent))"
                 vectorEffect="non-scaling-stroke"
               />
-              {temperatureProfile.map((point, index) => (
-                <circle
-                  key={index}
-                  cx={`${(point.temp / 30) * 100}%`}
-                  cy={`${(index / (temperatureProfile.length - 1)) * 100}%`}
-                  r="4"
-                  fill="hsl(var(--accent))"
-                  className="drop-shadow-sm"
-                />
-              ))}
-            </svg>
-          </div>
+            ))}
+          </svg>
+        </div>
 
           {/* Temperature Scale */}
           <div className="absolute right-0 top-0 h-full w-12 bg-primary/5 border-l border-accent/20 flex flex-col justify-between py-4">
