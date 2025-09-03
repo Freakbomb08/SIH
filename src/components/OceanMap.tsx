@@ -7,51 +7,60 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Layers, X, Settings } from "lucide-react";
 
-// ✅ Float Data
-const argoFloats = [
-  { id: "AD06", lat: 18.5, lon: 67.8, status: "active", type: "argo", lastProfile: "2024-01-15", temp: 28.5, salinity: 35.2 },
-  { id: "BD12", lat: 18.1, lon: 88.7, status: "inactive", type: "buoy", lastProfile: "2024-01-10", temp: null, salinity: null },
-  { id: "CA049", lat: 13.2, lon: 68.1, status: "maintenance", type: "argo", lastProfile: "2024-01-12", temp: null, salinity: null },
+// Buoy and float data from OON site
+const oceanBuoys = [
+  { id: "AD08", lat: 12.156828, lon: 67.945488, status: "active", type: "buoy", lastProfile: "2024-01-14", temp: 27.8, salinity: 34.9 },
+  { id: "AD06", lat: 18.266266, lon: 67.227509, status: "active", type: "buoy", lastProfile: "2024-01-15", temp: 28.5, salinity: 35.2 },
+  { id: "AD10", lat: 10.301832, lon: 72.59124, status: "active", type: "buoy", lastProfile: "2024-01-13", temp: 28.7, salinity: 35.0 },
+  { id: "CALVAL", lat: 10.49832, lon: 72.19752, status: "maintenance", type: "argo", lastProfile: "2024-01-12", temp: null, salinity: null },
+  { id: "CB02", lat: 10.87912, lon: 72.21461, status: "active", type: "buoy", lastProfile: "2024-01-11", temp: 28.4, salinity: 34.8 },
+  { id: "CB06", lat: 13.093099, lon: 80.30748, status: "active", type: "buoy", lastProfile: "2024-01-06", temp: 28.3, salinity: 35.0 },
+  { id: "BD11", lat: 13.468, lon: 84.115, status: "inactive", type: "buoy", lastProfile: "2024-01-10", temp: null, salinity: null },
+  { id: "BD13", lat: 14.005951, lon: 87.03067, status: "active", type: "buoy", lastProfile: "2024-01-08", temp: 28.0, salinity: 34.9 },
+  { id: "BD10", lat: 16.354828, lon: 88.003662, status: "active", type: "buoy", lastProfile: "2024-01-11", temp: 28.2, salinity: 35.1 },
+  { id: "BD14", lat: 6.568085, lon: 88.405579, status: "active", type: "buoy", lastProfile: "2024-01-07", temp: 27.7, salinity: 34.6 },
+  { id: "CB01", lat: 11.589, lon: 92.595, status: "active", type: "buoy", lastProfile: "2024-01-13", temp: 29.0, salinity: 35.0 },
+  { id: "BD12", lat: 10.552612, lon: 94.02533, status: "active", type: "buoy", lastProfile: "2024-01-09", temp: 27.9, salinity: 34.7 }
 ];
 
+// Marker color based on status and type
 const getMarkerColor = (status: string, type: string) => {
-  if (status === "inactive") return "#6b7280";
-  if (status === "maintenance") return "#f59e0b";
+  if (status === "inactive") return "#6b7280"; // gray
+  if (status === "maintenance") return "#f59e0b"; // amber
   switch (type) {
-    case "argo": return "#10b981";
-    case "buoy": return "#3b82f6";
-    case "omni": return "#8b5cf6";
-    case "coastal": return "#f97316";
+    case "argo": return "#10b981"; // green
+    case "buoy": return "#3b82f6"; // blue
+    case "omni": return "#8b5cf6"; // purple
+    case "coastal": return "#f97316"; // orange
     default: return "#10b981";
   }
 };
 
-// ✅ NEW Leaflet Map (Default)
-const LeafletMap = () => {
+const OceanMapNew = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
-  const [currentBasemap, setCurrentBasemap] = useState("light");
+  const [currentBasemap, setCurrentBasemap] = useState("topographic");
   const [showLegend, setShowLegend] = useState(true);
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
 
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    map.current = L.map(mapContainer.current).setView([15, 80], 4);
+    map.current = L.map(mapContainer.current).setView([15.5, 80.0], 5);
 
     const basemaps: Record<string, string> = {
-      satellite: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       topographic: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
       dark: "https://tiles.stadiamaps.com/tiles/alidade_dark/{z}/{x}/{y}{r}.png",
       light: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     };
 
     const layer = L.tileLayer(basemaps[currentBasemap], {
-      attribution: "&copy; OpenStreetMap contributors",
+      attribution: "&copy; Esri & OpenStreetMap contributors",
     });
     layer.addTo(map.current);
 
-    // Coordinates update
+    // Update coordinates on mouse move
     map.current.on("mousemove", (e: any) => {
       setCoordinates({
         lat: parseFloat(e.latlng.lat.toFixed(4)),
@@ -59,11 +68,11 @@ const LeafletMap = () => {
       });
     });
 
-    // Add floats
-    argoFloats.forEach((float) => {
-      const marker = L.circleMarker([float.lat, float.lon], {
-        radius: 6,
-        fillColor: getMarkerColor(float.status, float.type),
+    // Add markers for buoys
+    oceanBuoys.forEach((buoy) => {
+      const marker = L.circleMarker([buoy.lat, buoy.lon], {
+        radius: 7,
+        fillColor: getMarkerColor(buoy.status, buoy.type),
         color: "white",
         weight: 2,
         fillOpacity: 0.9,
@@ -71,12 +80,12 @@ const LeafletMap = () => {
 
       marker.bindPopup(`
         <div>
-          <b>${float.id}</b><br/>
-          Status: ${float.status}<br/>
-          Type: ${float.type}<br/>
-          Last: ${float.lastProfile}<br/>
-          ${float.temp ? `Temp: ${float.temp}°C` : ""}
-          ${float.salinity ? `<br/>Salinity: ${float.salinity} PSU` : ""}
+          <b>${buoy.id}</b><br/>
+          Status: ${buoy.status}<br/>
+          Type: ${buoy.type}<br/>
+          Last Profile: ${buoy.lastProfile}<br/>
+          ${buoy.temp ? `Temp: ${buoy.temp}°C` : ""}
+          ${buoy.salinity ? `<br/>Salinity: ${buoy.salinity} PSU` : ""}
         </div>
       `);
     });
@@ -132,10 +141,7 @@ const LeafletMap = () => {
                   </Button>
                 </div>
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#10b981]" />ARGO</div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#3b82f6]" />Buoy</div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]" />OMNI</div>
-                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#f97316]" />Coastal</div>
+                  <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#3b82f6]" />Moored Buoy - Active</div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#f59e0b]" />Maintenance</div>
                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#6b7280]" />Inactive</div>
                 </div>
@@ -168,22 +174,4 @@ const LeafletMap = () => {
   );
 };
 
-// 🔴 OLD MAPBOX VERSION (backup for you)
-const OldMapboxMap = () => {
-  return (
-    <div className="old-mapbox-code p-6 border mt-10">
-      //<h3 className="text-lg font-bold mb-2">⚠️ Old Mapbox Code Backup</h3>
-      ///<p className="text-sm">Yeh pura Mapbox wala code yahin safe hai. Ab OSM Leaflet use ho raha hai by default.</p>
-      {/* Tu chahe toh pura purana code yahan paste karke preserve kar sakta hai */}
-   // </div>
-  );
-};
-
-export default function OceanMap() {
-  return (
-    <>
-      <LeafletMap />
-      {/* <OldMapboxMap /> */}
-    </>
-  );
-}
+export default OceanMapNew;

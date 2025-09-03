@@ -32,14 +32,14 @@ const TechStack = () => {
       icon: BarChart3,
       color: "text-primary-glow",
       bgColor: "bg-primary-glow/10",
-      techs: ["Plotly", "Leaflet", "Cesium", "D3.js"]
+      techs: ["Plotly", "Leaflet", "Cesium"]
     },
     {
       category: "Interface",
       icon: MessageSquare,
       color: "text-secondary-foreground",
       bgColor: "bg-secondary/20",
-      techs: ["React", "Tailwind"]
+      techs: ["React", "Tailwind","Typescript"]
     }
   ];
 
