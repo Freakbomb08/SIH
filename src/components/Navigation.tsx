@@ -1,15 +1,14 @@
-// src/components/Navigation.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Menu, X, Waves, Database, MessageSquare, Map, Cpu } from "lucide-react";
+import { Menu, X, Waves, Database, MessageSquare, Map, Cpu, LayoutDashboard } from "lucide-react";
 
 const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Dashboard", icon: MessageSquare, href: "/dashboard" }, // internal route
+    { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" }, // internal route
     { name: "Chat", icon: MessageSquare, href: "#chat" },           // page anchor
     { name: "Map", icon: Map, href: "#map" },                      // page anchor
     { name: "Technology", icon: Cpu, href: "#tech" },              // page anchor
@@ -32,7 +31,6 @@ const Navigation: React.FC = () => {
         </Link>
       );
     }
-
     // anchor on same page (#something)
     if (item.href.startsWith("#")) {
       return (
@@ -66,12 +64,15 @@ const Navigation: React.FC = () => {
   return (
     <nav className="w-full">
       <div className="container mx-auto flex items-center justify-between py-4">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Waves className="w-6 h-6" />
-            <span className="font-semibold">Tera App</span>
-          </Link>
-        </div>
+        <div className="flex items-center gap-3">
+            <div className="p-2 rounded-full bg-gradient-ocean">
+              <Waves className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">FloatChat</h1>
+              <span className="text-xs text-muted-foreground">Beta</span>
+            </div>
+          </div>
 
         {/* Desktop menu */}
         <div className="hidden md:flex items-center gap-8">
