@@ -1,0 +1,17 @@
+langchain==0.3.27
+langchain-core==0.3.75
+langchain-community==0.3.29
+langchain-google-genai>=2.0.0,<3
+google-generativeai>=0.5.0
+faiss-cpu==1.9.0.post1
+pandas==2.3.1
+numpy==1.26.4
+sqlalchemy==2.0.36
+psycopg2==2.9.10
+streamlit==1.48.1
+plotly==5.24.1
+folium==0.18.0
+scikit-learn==1.7.0
+xarray==2025.1.2
+netCDF4==1.7.2
+tabulate
