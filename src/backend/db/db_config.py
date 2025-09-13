@@ -1,5 +1,5 @@
 DB_CONFIG = {
-    "dbname": "argo_sb",
+    "dbname": "argo_db",
     "user": "postgres",
     "password": "ayush",
     "host": "localhost",
