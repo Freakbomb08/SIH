@@ -1,20 +1,33 @@
+import sys
+import os
 import psycopg2
 import pandas as pd
+from psycopg2 import extras
 
-# File
-csv_file = "ocean_dataset_6000.csv"
+# ---- Fix import for DB_CONFIG ----
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from db.db_config import DB_CONFIG
 
-# DB connection
+# ---- CSV file path ----
+csv_file = r"C:/Users/Ayush Jaiswal/Desktop/SIH/src/backend/Data/argo_sample.csv"
+
+# ---- Connect to PostgreSQL ----
 conn = psycopg2.connect(
-    dbname="argo_db",
-    user="postgres",
-    password="StrongPass",
-    host="localhost",
-    port="5432"
+    dbname=DB_CONFIG['dbname'],
+    user=DB_CONFIG['user'],
+    password=DB_CONFIG['password'],
+    host=DB_CONFIG['host'],
+    port=DB_CONFIG['port']
 )
 cur = conn.cursor()
+print("✅ Connected to PostgreSQL")
 
-# Step 1: Create table
+# ---- Enable PostGIS ----
+cur.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
+conn.commit()
+print("✅ PostGIS extension enabled (if not already)")
+
+# ---- Create table ----
 cur.execute("""
 DROP TABLE IF EXISTS ocean_observations;
 CREATE TABLE ocean_observations (
@@ -32,22 +45,50 @@ CREATE TABLE ocean_observations (
 );
 """)
 conn.commit()
+print("✅ Table 'ocean_observations' created")
 
-# Step 2: Load CSV into pandas
-df = pd.read_csv("C:\Users\Ayush Jaiswal\Desktop\SIH\src\backend\Data\argo_sample.csv")
+# ---- Load CSV into pandas ----
+df = pd.read_csv(csv_file)
+df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
+print(df.columns)  # verify column names
 
-# Step 3: Insert data
-for _, row in df.iterrows():
-    cur.execute("""
-        INSERT INTO ocean_observations (timestamp, longitude, latitude, temperature_c, day_low_temperature_c, day_high_temperature_c, pressure_dbar, humidity_percent, salinity_psu, geom)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326));
-        """,
-        (row['timestamp'], row['longitude'], row['latitude'], row['temperature_c'], row['day_low_temperature_c'], row['day_high_temperature_c'], row['pressure_dbar'], row['humidity_percent'],
-         row['salinity_psu'], row['temperature'], row['geom'] 
-         )
+# Prepare data for faster insert
+records = [
+    (
+        row['timestamp'], row['longitude'], row['latitude'], row['temperature_c'],
+        row['day_low_temperature_c'], row['day_high_temperature_c'],
+        row['pressure_dbar'], row['humidity_percent'], row['salinity_psu'],
+        row['longitude'], row['latitude']
     )
+    for _, row in df.iterrows()
+]
 
+# ---- Insert data using execute_values (fast) ----
+insert_query = """
+INSERT INTO ocean_observations (
+    timestamp, longitude, latitude, temperature_c,
+    day_low_temperature_c, day_high_temperature_c,
+    pressure_dbar, humidity_percent, salinity_psu,
+    geom
+) VALUES %s
+"""
+extras.execute_values(
+    cur, insert_query, records,
+    template="(%s, %s, %s, %s, %s, %s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326))"
+)
 conn.commit()
+print("✅ Data inserted successfully into 'ocean_observations' (fast)")
+
+# ---- Create spatial index ----
+cur.execute("""
+CREATE INDEX IF NOT EXISTS geom
+ON ocean_observations
+USING GIST (geom);
+""")
+conn.commit()
+print("✅ Spatial index 'geom' created on geom column")
+
+# ---- Close connection ----
 cur.close()
 conn.close()
-print("Database created \n Data inserted successfully ✅")
+print("✅ Database connection closed")

@@ -11,8 +11,6 @@ print("Exist ? ", os.path.exists(file_path))
 # Load CSV if exists
 if os.path.exists(file_path):
     df = pd.read_csv(file_path)
-    print(df.head())
+    print(df.tail(3))
 else:
     print("❌ File not found. Please check the filename.")
-
-
